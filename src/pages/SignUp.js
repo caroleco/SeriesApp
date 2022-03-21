@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TextInput } from 'react-native'
+import { Text, View, StyleSheet, TextInput, Image } from 'react-native'
 import React from 'react'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 import Button from '../components/Button'
 import FormRow from '../components/FormRow'
+import groupImage from '../../assets/group_series.png'
 
 export default class SignUp extends React.Component {
     constructor(props) {
@@ -48,7 +49,7 @@ export default class SignUp extends React.Component {
                 return this.props.navigation.navigate('Login');
             })
             .catch((error) => {
-                this.setState({message: this.getMessageByErrorCode(error.code)})
+                this.setState({ message: this.getMessageByErrorCode(error.code) })
             })
     }
 
@@ -80,6 +81,13 @@ export default class SignUp extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+                <View style={styles.circle}>
+                    <Image
+                        style={styles.group}
+                        source={groupImage}
+                    />
+                </View>
+
                 <View style={styles.loginForm}>
                     <Text style={styles.welcome}>Cadastre-se</Text>
                     <FormRow first style={styles.row}>
@@ -106,7 +114,23 @@ export default class SignUp extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FEBD2F',
+        backgroundColor: '#fff',
+    },
+    circle: {
+        backgroundColor: '#000000',
+        height: 500,
+        width: 500,
+        left: -62,
+        top: -120,
+        borderRadius: 250
+
+    },
+    group: {
+        height: 360,
+        width: 400,
+        left: 68,
+        top: 290,
+        borderRadius: 0,
     },
     welcome: {
         fontSize: 20,
@@ -115,7 +139,6 @@ const styles = StyleSheet.create({
     },
     loginForm: {
         backgroundColor: '#fff',
-        marginTop: '85%',
         marginLeft: 20,
         marginRight: 20,
         borderRadius: 20,
