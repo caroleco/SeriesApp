@@ -4,7 +4,6 @@ import {
     StyleSheet,
     Text,
     ActivityIndicator,
-    Alert,
     TouchableOpacity
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
@@ -14,6 +13,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import FormRow from '../components/FormRow';
 import Button from '../components/Button';
+import logo from '../../assets/logo.png';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -59,7 +59,7 @@ export default class Login extends React.Component {
 
         const auth = getAuth();
         signInWithEmailAndPassword(auth, mail, password)
-            .then(()=>{
+            .then(() => {
                 this.setState({ message: 'Sucesso!' });
             })
             .catch(error => {
@@ -113,6 +113,7 @@ export default class Login extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+                <Text style={styles.appName}>Suas Séries!</Text>
                 <View style={styles.loginForm}>
                     <Text style={styles.welcome}>Bem vindo de volta!</Text>
                     <FormRow first style={styles.row}>
@@ -143,6 +144,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FEBD2F',
     },
+    appName: {
+        color: '#000000',
+        fontSize: 25,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 90
+    },
     welcome: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -150,7 +158,7 @@ const styles = StyleSheet.create({
     },
     loginForm: {
         backgroundColor: '#fff',
-        marginTop: '85%',
+        marginTop: '75%',
         marginLeft: 20,
         marginRight: 20,
         borderRadius: 20,
