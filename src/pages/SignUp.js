@@ -1,28 +1,18 @@
-import React from 'react';
-import {
-    View,
-    StyleSheet,
-    Text,
-    ActivityIndicator,
-    Alert,
-    TouchableOpacity
-} from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { Text, View, StyleSheet, TextInput } from 'react-native'
+import React from 'react'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
-import FormRow from '../components/FormRow';
-import Button from '../components/Button';
+import Button from '../components/Button'
+import FormRow from '../components/FormRow'
 
-export default class Login extends React.Component {
+export default class SignUp extends React.Component {
     constructor(props) {
-        super(props);
-
+        super(props)
         this.state = {
             mail: '',
             password: '',
-            isLoading: false,
             message: ''
         }
     }
@@ -46,55 +36,32 @@ export default class Login extends React.Component {
     onChangeHandler(field, value) {
         this.setState({
             [field]: value
-        });
+        })
     }
 
-    tryLogin() {
-        this.setState({ isLoading: true, message: '' });
+    createUser() {
         const { mail, password } = this.state;
 
-        const loginUserFailed = error => {
-            this.setState({ message: this.getMessageByErrorCode(error.code) });
-        }
-
         const auth = getAuth();
-        signInWithEmailAndPassword(auth, mail, password)
-            .then(()=>{
-                this.setState({ message: 'Sucesso!' });
+        createUserWithEmailAndPassword(auth, mail, password)
+            .then(() => {
+                return this.props.navigation.navigate('Login');
             })
-            .catch(error => {
-                loginUserFailed(error)
+            .catch((error) => {
+                this.setState({message: this.getMessageByErrorCode(error.code)})
             })
-            .then(() => this.setState({ isLoading: false }));
     }
 
     getMessageByErrorCode(errorCode) {
         switch (errorCode) {
-            case 'auth/wrong-password':
-                return 'Senha incorreta'
-            case 'auth/user-not-found':
-                return 'Usuário não encontrado'
+            case 'auth/weak-password':
+                return 'Senha fraca'
+            case 'auth/invalid-email':
+                return 'E-mail inválido'
             default:
-                return 'Erro desconhecido'
+                return 'Operação não permitida'
+
         }
-    }
-
-    renderButton() {
-        if (this.state.isLoading)
-            return <ActivityIndicator color="#FEBD2F" />;
-        return (
-            <Button onPress={() => this.tryLogin()} title="Entrar" />
-        )
-    }
-
-    renderSignUp() {
-        return (
-            <View style={styles.signUpContainer}>
-                <TouchableOpacity onPress={() => { this.props.navigation.navigate('SignUp') }}>
-                    <Text style={styles.signupBtn}>Cadastre-se</Text>
-                </TouchableOpacity>
-            </View>
-        )
     }
 
     renderMessage() {
@@ -114,7 +81,7 @@ export default class Login extends React.Component {
         return (
             <View style={styles.container}>
                 <View style={styles.loginForm}>
-                    <Text style={styles.welcome}>Bem vindo de volta!</Text>
+                    <Text style={styles.welcome}>Cadastre-se</Text>
                     <FormRow first style={styles.row}>
                         <TextInput style={styles.input}
                             placeholder='E-mail'
@@ -128,10 +95,8 @@ export default class Login extends React.Component {
                             secureTextEntry
                             onChangeText={value => this.onChangeHandler('password', value)} />
                     </FormRow>
-                    {this.renderButton()}
+                    <Button onPress={() => { this.createUser() }} title="Cadastrar" />
                     {this.renderMessage()}
-                    {this.renderSignUp()}
-
                 </View>
             </View>
         )
@@ -167,13 +132,4 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
 
     },
-    signUpContainer: {
-        marginRight: 10,
-        marginTop: 10
-    },
-    signupBtn: {
-        color: '#171725',
-        textAlign: 'right',
-        fontSize: 15
-    }
 })
