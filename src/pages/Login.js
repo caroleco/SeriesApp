@@ -13,7 +13,6 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import FormRow from '../components/FormRow';
 import Button from '../components/Button';
-import logo from '../../assets/logo.png';
 
 export default class Login extends React.Component {
     constructor(props) {
