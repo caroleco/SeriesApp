@@ -1,8 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    Text,
+    ActivityIndicator
+} from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import FormRow from '../components/FormRow';
 import LoginButton from '../components/LoginButton';
@@ -14,6 +20,7 @@ export default class Login extends React.Component {
         this.state = {
             mail: '',
             password: '',
+            isLoading: false
         }
     }
 
@@ -40,7 +47,26 @@ export default class Login extends React.Component {
     }
 
     tryLogin() {
-        console.log(this.state);
+        this.setState({ isLoading: true });
+        const { mail, password } = this.state;
+
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, mail, password)
+            .then(userCredential => {
+                console.log('Usuário autenticado', userCredential)
+            })
+            .catch(error => {
+                console.log("Usuário não encontrado", error);
+            })
+            .then(() => this.setState({ isLoading: false }));
+    }
+
+    renderButton() {
+        if (this.state.isLoading)
+            return <ActivityIndicator color="#FEBD2F" />;
+        return (
+            <LoginButton onPress={() => this.tryLogin()} title="Entrar" />
+        )
     }
 
     render() {
@@ -61,7 +87,7 @@ export default class Login extends React.Component {
                             secureTextEntry
                             onChangeText={value => this.onChangeHandler('password', value)} />
                     </FormRow>
-                    <LoginButton onPress={() => this.tryLogin()} title="Entrar" />
+                    {this.renderButton()}
                 </View>
             </View>
         )
