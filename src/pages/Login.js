@@ -7,14 +7,16 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import {connect} from 'react-redux';
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import FormRow from '../components/FormRow';
 import Button from '../components/Button';
+import { tryLogin } from '../actions';
 
-export default class Login extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
 
@@ -48,41 +50,19 @@ export default class Login extends React.Component {
         });
     }
 
-    tryLogin() {
+    tryLogin1() {
         this.setState({ isLoading: true, message: '' });
-        const { mail, password } = this.state;
+        const { mail: email, password } = this.state;
 
-        const loginUserFailed = error => {
-            this.setState({ message: this.getMessageByErrorCode(error.code) });
-        }
+        this.props.tryLogin({email, password});
 
-        const auth = getAuth();
-        signInWithEmailAndPassword(auth, mail, password)
-            .then(() => {
-                this.setState({ message: 'Sucesso!' });
-            })
-            .catch(error => {
-                loginUserFailed(error)
-            })
-            .then(() => this.setState({ isLoading: false }));
-    }
-
-    getMessageByErrorCode(errorCode) {
-        switch (errorCode) {
-            case 'auth/wrong-password':
-                return 'Senha incorreta'
-            case 'auth/user-not-found':
-                return 'Usuário não encontrado'
-            default:
-                return 'Erro desconhecido'
-        }
     }
 
     renderButton() {
         if (this.state.isLoading)
             return <ActivityIndicator color="#FEBD2F" />;
         return (
-            <Button onPress={() => this.tryLogin()} title="Entrar" />
+            <Button onPress={() => this.tryLogin1()} title="Entrar" />
         )
     }
 
@@ -184,3 +164,5 @@ const styles = StyleSheet.create({
         fontSize: 15
     }
 })
+
+export default connect(null, { tryLogin })(Login);
