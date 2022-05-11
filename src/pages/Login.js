@@ -7,19 +7,19 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
 import FormRow from '../components/FormRow';
 import Button from '../components/Button';
-import { tryLogin } from '../actions';
+import tryLogin from '../actions';
+import { ThemeContext } from 'react-navigation';
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             mail: '',
             password: '',
@@ -37,11 +37,10 @@ class Login extends React.Component {
             messagingSenderId: "312337930506",
             appId: "1:312337930506:web:62aa9719f72aee80ef02f3",
             measurementId: "G-7YF4EDRPH8"
-        };
-
-        // Initialize Firebase
+        };        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+        this.props.dispatchTryLogin
     }
 
     onChangeHandler(field, value) {
@@ -50,11 +49,15 @@ class Login extends React.Component {
         });
     }
 
-    tryLogin1() {
+    tryLogin() {
         this.setState({ isLoading: true, message: '' });
         const { mail: email, password } = this.state;
 
-        this.props.tryLogin({email, password});
+        this.props.dispatchTryLogin({ email, password })
+            .then(() => {
+                this.setState({ message: "Sucesso" });
+                this.props.navigation.replace('Main')
+            })
 
     }
 
@@ -62,7 +65,7 @@ class Login extends React.Component {
         if (this.state.isLoading)
             return <ActivityIndicator color="#FEBD2F" />;
         return (
-            <Button onPress={() => this.tryLogin1()} title="Entrar" />
+            <Button onPress={() => this.tryLogin()} title="Entrar" />
         )
     }
 
@@ -165,4 +168,5 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(null, { tryLogin })(Login);
+export default connect(null, { dispatchTryLogin: tryLogin })
+    (Login);
